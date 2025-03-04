@@ -33,9 +33,9 @@ const googleClient = new OAuth2Client(
   process.env.GOOGLE_CLIENT_ID!,
   process.env.GOOGLE_CLIENT_SECRET!
 );
-const userRouter = Router();
+const authRouter = Router();
 
-userRouter.post("/signup", async (req, res) => {
+authRouter.post("/signup", async (req, res) => {
   const { email, otp, name } = req.body;
   if (!email || !otp) {
     res.status(400).json({
@@ -81,7 +81,7 @@ userRouter.post("/signup", async (req, res) => {
   });
 });
 
-userRouter.post("/signin", async (req, res) => {
+authRouter.post("/signin", async (req, res) => {
   const { email, otp } = req.body;
   console.log("email", email);
   console.log("otp", otp);
@@ -115,7 +115,7 @@ userRouter.post("/signin", async (req, res) => {
     },
   });
 });
-userRouter.post("/google-signin", async (req, res) => {
+authRouter.post("/google-signin", async (req, res) => {
   try {
     const { idToken } = req.body;
     if (!idToken) {
@@ -173,7 +173,7 @@ userRouter.post("/google-signin", async (req, res) => {
   }
 });
 
-userRouter.post("/send-otp", async (req, res) => {
+authRouter.post("/send-otp", async (req, res) => {
   const { email, type } = req.body;
   if (!email || !type || !["signup", "signin"].includes(type)) {
     res.status(400).json({
@@ -188,4 +188,4 @@ userRouter.post("/send-otp", async (req, res) => {
     message: "OTP sent successfully",
   });
 });
-export default userRouter;
+export default authRouter;
