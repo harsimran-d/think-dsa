@@ -83,8 +83,6 @@ authRouter.post("/signup", async (req, res) => {
 
 authRouter.post("/signin", async (req, res) => {
   const { email, otp } = req.body;
-  console.log("email", email);
-  console.log("otp", otp);
   const user = await prisma.user.findUnique({
     where: { email },
   });
@@ -98,8 +96,6 @@ authRouter.post("/signin", async (req, res) => {
   const { otp: otpFromRedis, type } = JSON.parse(valueFromRedis || "{}");
 
   if (otpFromRedis !== otp || type !== "signin") {
-    console.log("failing here ");
-    console.log(otpFromRedis, otp, type);
     res.status(401).json({ message: "Invalid OTP" });
     return;
   }
@@ -135,7 +131,6 @@ authRouter.post("/google-signin", async (req, res) => {
       });
       return;
     }
-    console.log(payload);
     const email = payload.email as string;
 
     const user = await prisma.user.findFirst({

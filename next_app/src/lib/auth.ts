@@ -21,7 +21,7 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
       clientSecret: process.env.AUTH_GOOGLE_CLIENT_SECRET!,
       profile: async (profile, tokens) => {
         try {
-          const response = await api.post("/api/v1/auth/user/google-signin", {
+          const response = await api.post("/api/v1/auth/google-signin", {
             idToken: tokens.id_token,
           });
           if (response.status != 200) {
@@ -51,7 +51,7 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
           try {
             console.log("email", email);
             console.log("password", password);
-            const response = await api.post("/api/v1/auth/user/signin", {
+            const response = await api.post("/api/v1/auth/signin", {
               email,
               otp: password,
             });
