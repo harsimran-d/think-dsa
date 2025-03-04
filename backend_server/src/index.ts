@@ -9,6 +9,8 @@ import userRoutes from "./router/user.routes";
 import questionRoutes from "./router/question.routes";
 import learningPathRoutes from "./router/learning-path.routes";
 import cacheRoutes from "./router/cache.routes";
+
+import "./workers/otp-email-sender";
 configDotenv();
 
 const app = express();

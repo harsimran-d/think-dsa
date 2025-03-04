@@ -1,19 +1,23 @@
-import redis from "redis";
+import { createClient } from "redis";
 import sendgrid from "@sendgrid/mail";
 import { configDotenv } from "dotenv";
 configDotenv();
 
 sendgrid.setApiKey(process.env.SENDGRID_API_KEY!);
 
-const client = redis.createClient();
+const redis = createClient({
+  url: `redis://${process.env.REDIS_HOST || "localhost"}:${
+    process.env.REDIS_PORT || 6379
+  }`,
+});
 const streamName = "email_otp_notifications";
 const groupName = "email_service_group";
 const consumerName = "email_consumer_1";
 
 async function createConsumerGroup() {
   try {
-    await client.connect();
-    await client.xGroupCreate(streamName, groupName, "0", { MKSTREAM: true });
+    await redis.connect();
+    await redis.xGroupCreate(streamName, groupName, "0", { MKSTREAM: true });
     console.log(`Consumer group '${groupName}' created.`);
   } catch (error) {
     if (error instanceof Error) {
@@ -31,7 +35,7 @@ async function createConsumerGroup() {
 async function processMessages() {
   while (true) {
     try {
-      const response = await client.xReadGroup(
+      const response = await redis.xReadGroup(
         groupName,
         consumerName,
         [{ key: streamName, id: ">" }],
@@ -48,7 +52,7 @@ async function processMessages() {
 
             await sendEmail(email, otp);
 
-            await client.xAck(streamName, groupName, id);
+            await redis.xAck(streamName, groupName, id);
           }
         }
       }
@@ -72,7 +76,7 @@ async function sendEmail(email: string, otp: string) {
           <td>
             <table style="padding: 20px 0; width: 100%;" cellpadding="0" cellspacing="0" border="0">
               <tr>
-                <td style="padding-top: 20px; padding-bottom: 10px; color: black; text-align: center; font-weight: 600; font-size: 24px;">Commitly</td>
+                <td style="padding-top: 20px; padding-bottom: 10px; color: black; text-align: center; font-weight: 600; font-size: 24px;">ThinkDSA</td>
               </tr>
             </table>
           </td>
